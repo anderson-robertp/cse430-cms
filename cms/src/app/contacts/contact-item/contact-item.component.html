@@ -1,1 +1,17 @@
-<p>contact-item works!</p>
+<a
+    href="#"
+    class="list-group-item clearfix"
+    (click)="onSelected()">
+        <div class="col-sm-3 pull-right">
+            <img
+            [src]="contact.imageUrl"
+            [alt]="contact.name"
+            class="img-responsive"
+            />
+        </div>
+    <div class="pull-left">
+        <div class="col-sm-9">
+            <h4>{{ contact.name }}</h4>
+        </div>
+    </div>
+</a>

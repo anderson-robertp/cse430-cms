@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+
 import { Contact } from '../contact.model';
 
 @Component({
@@ -8,5 +9,16 @@ import { Contact } from '../contact.model';
   styleUrl: './contact-detail.component.css'
 })
 export class ContactDetailComponent {
-  selectedContact: Contact;
+  @Input() contact: Contact;
+  
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['contact']) {
+      console.log('Contact changed:', changes['contact'].currentValue);
+    }
+  }
+  ngOnInit() {
+    console.log('Contact received on initialization:', this.contact);
+  }
+
+  constructor() {  }
 }
