@@ -18,7 +18,8 @@ export class MessageEditComponent {
 
   constructor() {}
 
-  onAddMessage() {
+  onAddMessage(event: Event) {
+    event.preventDefault();
     const subject = this.subjectInputRef.nativeElement.value;
     const msgText = this.msgTextInputRef.nativeElement.value;
 
@@ -34,6 +35,8 @@ export class MessageEditComponent {
     );
 
     this.addMessageEvent.emit(newMessage);
+
+    this.onClear();
   }
 
   onClear() {
