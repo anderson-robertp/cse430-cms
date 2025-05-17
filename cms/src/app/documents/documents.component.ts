@@ -7,5 +7,10 @@ import { Component } from '@angular/core';
   styleUrl: './documents.component.css'
 })
 export class DocumentsComponent {
-
+  selectedDocument: Document | null = null;
+  
+  onDocumentSelected(document: Document) {
+    this.selectedDocument = document;
+    console.log('Selected Document:', document);
+  }
 }
