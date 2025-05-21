@@ -19,13 +19,14 @@ export class ContactsService {
   }
 
   getContact(id: string) {
+    //console.log('Looking For Contact ID:', id);
     for (let contact of this.contacts) {
       if (contact.id === id) {
+        //console.log('Contact found:', contact);
         return contact;
-      } else {
-        return null;
       }
-    } 
+    }
+    return null;
   }
 
   
