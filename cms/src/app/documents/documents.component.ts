@@ -18,7 +18,16 @@ export class DocumentsComponent {
 
   constructor(private documentService: DocumentsService) { }
   
-  ngOnInit() { }
+  ngOnInit() {
+    this.documentService.documentSelectedEvent.subscribe( 
+      (document: Document) => {
+        this.selectedDocument = document;
+        console.log('Selected Document in Documents Component:', document);
+      }
+    );
+  }
+
+
 
   getDocuments() {
     return this.documentService.getDocuments();
