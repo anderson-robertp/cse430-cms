@@ -144,4 +144,14 @@ export const MOCKDOCUMENTS: any[] = [
     name: 'CIT 340 - Networking II',
     url: 'https://content.byui.edu/file/b7c3e5ed-6947-497f-9d32-4e5b6b397cac/1/CIT 366 course description.pdf',
   },
+  {
+    id: '49',
+    name: 'CIT 350 - Database Management Systems',
+    url: 'https://content.byui.edu/file/b7c3e5ed-6947-497f-9d32-4e5b6b397cac/1/CIT 366 course description.pdf',
+  },
+  {
+    id: '50',
+    name: 'CIT 360 - Object Oriented Programming I',
+    url: 'https://content.byui.edu/file/b7c3e5ed-6947-497f-9d32-4e5b6b397cac/1/CIT 366 course description.pdf',
+  }
 ];

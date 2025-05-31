@@ -6,15 +6,16 @@ import { DocumentsService } from './documents.service';
   selector: 'cms-documents',
   standalone: false,
   templateUrl: './documents.component.html',
-  styleUrl: './documents.component.css'
+  styleUrl: './documents.component.css',
+  providers: [DocumentsService]
 })
 export class DocumentsComponent {
-  selectedDocument: Document | null = null;
+  selectedDocument: Document;
   
-  onDocumentSelected(document: Document) {
+  /*onDocumentSelected(document: Document) {
     this.selectedDocument = document;
     console.log('Selected Document:', document);
-  }
+  }*/
 
   constructor(private documentService: DocumentsService) { }
   
