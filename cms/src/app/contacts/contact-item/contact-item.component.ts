@@ -11,13 +11,6 @@ import { Contact } from '../contact.model';
 export class ContactItemComponent {
   @Input() contact: Contact;
 
-  @Output() contactSelected = new EventEmitter<Contact>();
-
   constructor() {  }
-
-  onSelected() {
-    console.log('Contact selected in contact-list:', this.contact);
-    this.contactSelected.emit(this.contact);
-  }
 
 }

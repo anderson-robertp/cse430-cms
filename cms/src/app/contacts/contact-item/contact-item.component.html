@@ -1,7 +1,7 @@
 <a
-    href="#"
-    class="list-group-item clearfix"
-    (click)="onSelected()">
+    [routerLink]="[contact.id]"
+    routerLinkActive="active"
+    class="list-group-item clearfix">
         <div class="col-sm-3 pull-right">
             <img
             [src]="contact.imageUrl"
