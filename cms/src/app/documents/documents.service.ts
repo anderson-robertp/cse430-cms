@@ -47,7 +47,7 @@ export class DocumentsService {
     this.maxDocumentId++;
     newDoc.id = this.maxDocumentId.toString();
     this.documents.push(newDoc);
-    this.documentListChangedEvent.next(this.documents.slice());
+    this.documentChangedEvent.next(this.documents.slice());
   }
 
   updateDocument(originalDocument: Document, newDocument: Document) {
