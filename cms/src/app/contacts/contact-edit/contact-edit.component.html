@@ -82,6 +82,7 @@
             id="groupList"
             cdkDropList
             [cdkDropListData]="groupContacts"
+            [cdkDropListConnectedTo]="['contactList']"
             (cdkDropListDropped)="onDropSuccess($event)"
             style="min-height: 3rem; border: 2px dashed #ccc; padding: 1rem;"
           >

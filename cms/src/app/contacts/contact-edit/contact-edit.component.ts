@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ContactsService } from '../contacts.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 
 import { Contact } from '../contact.model';
 
@@ -14,11 +14,12 @@ import { Contact } from '../contact.model';
   styleUrl: './contact-edit.component.css'
 })
 
-export class ContactEditComponent {
+export class ContactEditComponent implements OnInit {
   originalContact: Contact;
   contact: Contact;
   editMode: boolean = false;
   groupContacts: Contact[] = [];
+  contacts: Contact[] = [];
   id: string;
 
   constructor(
@@ -59,10 +60,10 @@ export class ContactEditComponent {
 
     const newContact = new Contact(
       this.editMode ? this.originalContact.id : this.contactService.getContacts().length.toString(),
-      value.firstName,
-      value.lastName,
+      value.name,
       value.email,
       value.phone,
+      value.imageUrl,
       this.groupContacts
     );
 
@@ -85,12 +86,29 @@ export class ContactEditComponent {
     return this.groupContacts.some(c => c.id === newContact.id);
   }
 
-  onDropSuccess(event: CdkDragDrop<any>) {
-    const droppedContact = event.item.data;
+  onDropSuccess(event: CdkDragDrop<Contact[]>) {
+  if (event.previousContainer !== event.container) {
+    const draggedContact = event.previousContainer.data[event.previousIndex];
 
-    if (!this.groupContacts.includes(droppedContact)) {
-      this.groupContacts.push(droppedContact);
+    if (this.isInvalidContact(draggedContact)) {
+      // Ignore duplicates
+      return;
     }
+
+    transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
+}
+
+  onRemoveItem(index: number) {
+    if (index < 0 || index >= this.groupContacts.length) return;
+    this.groupContacts.splice(index, 1);
+  }
+
+
 
 }
