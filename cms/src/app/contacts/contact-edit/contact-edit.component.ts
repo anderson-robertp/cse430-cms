@@ -89,9 +89,10 @@ export class ContactEditComponent implements OnInit {
   onDropSuccess(event: CdkDragDrop<Contact[]>) {
   if (event.previousContainer !== event.container) {
     const draggedContact = event.previousContainer.data[event.previousIndex];
-
+    console.log('Dragged Contact:', draggedContact);
     if (this.isInvalidContact(draggedContact)) {
       // Ignore duplicates
+      console.log('Duplicate or invalid contact, ignoring.');
       return;
     }
 
@@ -101,6 +102,7 @@ export class ContactEditComponent implements OnInit {
       event.previousIndex,
       event.currentIndex
     );
+    console.log('Contact added to group.')
   }
 }
 

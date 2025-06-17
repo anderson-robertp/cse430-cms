@@ -8,7 +8,7 @@
     cdkDropList
     id="contactsList"
     [cdkDropListData]="contacts"
-    [cdkDropListConnectedTo]="['groupsList']">
+    [cdkDropListConnectedTo]="['groupList']">
     
     <div *ngFor="let contact of contacts" cdkDrag [cdkDragData]="contact" class="mb-2">
       <cms-contact-item [contact]="contact"></cms-contact-item>
