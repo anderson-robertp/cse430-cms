@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { Contact } from './contact.model';
 import { MOCKCONTACTS } from './MOCKCONTACTS';
-import { Subject } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +11,15 @@ export class ContactsService {
   private maxContactId: number;
 
   contactSelectedEvent = new EventEmitter<Contact>();
-
   contactChangedEvent = new EventEmitter<Contact[]>();
+
+  contacts$ = new BehaviorSubject<Contact[]>([]);
+  groupContacts$ = new BehaviorSubject<Contact[]>([]);
 
   constructor() {
     this.contacts = MOCKCONTACTS;
     this.maxContactId = this.getMaxId();
+    this.contacts$.next(this.contacts.slice());
   }
 
   getMaxId(): number {
@@ -41,7 +44,7 @@ export class ContactsService {
     this.maxContactId++;
     newContact.id = this.maxContactId.toString();
     this.contacts.push(newContact);
-    this.contactChangedEvent.emit(this.contacts.slice());
+    this.contactChangedEvent.next(this.contacts.slice());
   }
 
   updateContact(originalContact: Contact, newContact: Contact) {
@@ -54,7 +57,7 @@ export class ContactsService {
     }
     newContact.id = originalContact.id; // Keep the same ID
     this.contacts[pos] = newContact;
-    this.contactChangedEvent.emit(this.contacts.slice());
+    this.contactChangedEvent.next(this.contacts.slice());
   }
 
   getContact(id: string) {
@@ -78,5 +81,9 @@ export class ContactsService {
     }
     this.contacts.splice(pos, 1);
     this.contactChangedEvent.emit(this.contacts.slice());
+  }
+
+  setGroupContacts(contacts: Contact[]) {
+    this.groupContacts$.next(contacts.slice());
   }
 }
