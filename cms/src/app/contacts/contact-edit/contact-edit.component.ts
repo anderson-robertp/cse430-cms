@@ -64,7 +64,7 @@ export class ContactEditComponent implements OnInit {
       value.email,
       value.phone,
       value.imageUrl,
-      this.groupContacts
+      this.groupContacts.slice() // Create a copy of the groupContacts array
     );
 
     if (this.editMode) {
