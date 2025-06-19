@@ -55,6 +55,8 @@ export class ContactsService {
     this.http.put('https://cse430cms-default-rtdb.firebaseio.com/contacts.json', contactsJson)
       .subscribe(
         () => {
+          this.contacts.sort((a, b) => a.name.localeCompare(b.name));
+          this.contactListChangedEvent.next(this.contacts.slice());
           this.contacts$.next(this.contacts.slice());
         },
         (error: any) => {

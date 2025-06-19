@@ -7,19 +7,14 @@ import { Contact } from './contact.model';
 })
 export class ContactsFilterPipe implements PipeTransform {
 
-  transform(contects: Contact[], term: string): Contact[] {
-    let filteredContacts: Contact[] = [];
+  transform(contacts: Contact[], term: string): Contact[] {
+    if (!contacts) return [];
+    if (!term || term.trim() === '') return contacts;
 
-    if (term && term.length > 0) {
-      const searchTerm = term.toLowerCase();
-      filteredContacts = contects.filter(contact => {
-        return contact.name.toLowerCase().includes(searchTerm) ||
-               contact.email.toLowerCase().includes(searchTerm) ||
-               contact.phone.toLowerCase().includes(searchTerm);
-      });
-    }
-
-    return filteredContacts.length > 0 ? filteredContacts : contects;
+    const lowerTerm = term.toLowerCase();
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(lowerTerm)
+    );
   }
 
 }
