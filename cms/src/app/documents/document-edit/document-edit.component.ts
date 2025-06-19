@@ -18,6 +18,7 @@ export class DocumentEditComponent implements OnInit {
   document: Document;
   editMode: boolean = false;
 
+
   constructor(
     private documentService: DocumentsService,
     private router: Router,
@@ -49,8 +50,12 @@ export class DocumentEditComponent implements OnInit {
   onSubmit(form: NgForm) {
     const value = form.value;
 
+    const newId = this.editMode
+    ? this.originalDocument.id
+    : (this.documentService.getMaxId() + 1).toString();
+
     const newDocument = new Document(
-      this.editMode ? this.originalDocument.id : this.documentService.getDocuments().length.toString(),
+      newId,
       value.name,
       value.description,
       value.url,

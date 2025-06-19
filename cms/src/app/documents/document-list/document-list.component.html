@@ -11,6 +11,9 @@
       *ngFor="let doc of documents"
       [document]="doc">
     </cms-document-item>
+    <div *ngIf="documents.length === 0" class="alert alert-info">
+      No documents found.
+    </div>
     </div>
   </div>
 

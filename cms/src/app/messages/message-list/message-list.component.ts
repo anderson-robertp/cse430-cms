@@ -21,7 +21,7 @@ export class MessageListComponent {
   constructor(private messageServe: MessagesService) { }
   
   ngOnInit() {
-    this.messages = this.messageServe.getMessages();
+    this.messageServe.getMessages();
     this.messageServe.messageChangedEvent.subscribe(
       (messages: Message[]) => {
         this.messages = messages;

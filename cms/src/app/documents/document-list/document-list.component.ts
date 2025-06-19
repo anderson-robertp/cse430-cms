@@ -13,7 +13,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class DocumentListComponent {
   
-  documents: Document[];
+  documents: Document[] = [];
+
   private subscription: Subscription;
 
   constructor(
@@ -24,12 +25,12 @@ export class DocumentListComponent {
   
 
   ngOnInit() {
-    this.documents = this.documentService.getDocuments();
+    this.documentService.getDocuments();
 
-    this.subscription = this.documentService.documentChangedEvent
+    this.subscription = this.documentService.documentListChangedEvent
       .subscribe((documents: Document[]) => {
         this.documents = documents;
-        //console.log('Document List Component - Documents:', this.documents);
+        console.log('Document List Component - Documents:', this.documents);
       }
     );
   }

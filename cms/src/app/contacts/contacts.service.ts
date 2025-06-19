@@ -2,6 +2,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { Contact } from './contact.model';
 import { MOCKCONTACTS } from './MOCKCONTACTS';
 import { Subject, BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { Subject, BehaviorSubject } from 'rxjs';
 export class ContactsService {
   private contacts: Contact[] = [];
   private maxContactId: number;
+  contactListChangedEvent = new Subject<Contact[]>();
 
   contactSelectedEvent = new EventEmitter<Contact>();
   contactChangedEvent = new EventEmitter<Contact[]>();
@@ -16,11 +18,9 @@ export class ContactsService {
   contacts$ = new BehaviorSubject<Contact[]>([]);
   groupContacts$ = new BehaviorSubject<Contact[]>([]);
 
-  constructor() {
-    this.contacts = MOCKCONTACTS;
-    this.maxContactId = this.getMaxId();
-    this.contacts$.next(this.contacts.slice());
-  }
+  constructor(
+    private http: HttpClient
+  ) {}
 
   getMaxId(): number {
     let maxId = 0;
@@ -34,17 +34,41 @@ export class ContactsService {
   }
 
   getContacts() {
-    return this.contacts.slice();
+    this.http.get<Contact[]>('https://cse430cms-default-rtdb.firebaseio.com/contacts.json')
+      .subscribe(
+        (contacts) => {
+          this.contacts = contacts || [];
+          console.log('Fetched contacts:', this.contacts);
+          this.maxContactId = this.getMaxId();
+          this.contacts.sort((a, b) => a.name.localeCompare(b.name));
+          //this.contactListChangedEvent.next(this.contacts.slice());
+          this.contacts$.next(this.contacts.slice());
+        },
+        (error: any) => {
+          console.error('Error fetching contacts:', error);
+        }
+      )
   }
+
+  storeContacts() {
+    const contactsJson = JSON.stringify(this.contacts);
+    this.http.put('https://cse430cms-default-rtdb.firebaseio.com/contacts.json', contactsJson)
+      .subscribe(
+        () => {
+          this.contacts$.next(this.contacts.slice());
+        },
+        (error: any) => {
+          console.error('Error storing contacts:', error);
+        }
+      );
+  } 
 
   addContact(newContact: Contact) {
     if (!newContact) {
       return;
     }
-    this.maxContactId++;
-    newContact.id = this.maxContactId.toString();
     this.contacts.push(newContact);
-    this.contactChangedEvent.next(this.contacts.slice());
+    this.storeContacts();
   }
 
   updateContact(originalContact: Contact, newContact: Contact) {
@@ -55,9 +79,9 @@ export class ContactsService {
     if (pos < 0) {
       return;
     }
-    newContact.id = originalContact.id; // Keep the same ID
+    //newContact.id = originalContact.id; // Keep the same ID
     this.contacts[pos] = newContact;
-    this.contactChangedEvent.next(this.contacts.slice());
+    this.storeContacts();
   }
 
   getContact(id: string) {
@@ -73,6 +97,7 @@ export class ContactsService {
 
   deleteContact(contact: Contact) {
     if (!contact) {
+      console.error('Invalid contact');
       return;
     }
     const pos = this.contacts.indexOf(contact);
@@ -80,7 +105,7 @@ export class ContactsService {
       return;
     }
     this.contacts.splice(pos, 1);
-    this.contactChangedEvent.emit(this.contacts.slice());
+    this.storeContacts();
   }
 
   setGroupContacts(contacts: Contact[]) {
