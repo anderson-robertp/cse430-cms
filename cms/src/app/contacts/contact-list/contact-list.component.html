@@ -4,9 +4,17 @@
     <a class="btn btn-success pull-right" routerLink="/contacts/new" role="button">+ New Contact</a>
   </div>
 
-  <div class="panel-body">
-    <div *ngFor="let contact of contacts" cdkDrag [cdkDragData]="contact">
-      <cms-contact-item [contact]="contact"></cms-contact-item>
+  <!-- This container holds draggable contact items -->
+  <div class="panel-body" cdkDropListGroup>
+    <div *ngFor="let contact of contacts" class="mb-2 draggable-contact" (cdkDragStarted)="onDragStart(contact)">
+      <div
+        cdkDrag
+        [cdkDragData]="contact"
+        class="card p-2"
+        style="cursor: move; border: 1px solid #ccc; border-radius: 5px;"
+      >
+        <cms-contact-item [contact]="contact"></cms-contact-item>
+      </div>
     </div>
   </div>
 </div>

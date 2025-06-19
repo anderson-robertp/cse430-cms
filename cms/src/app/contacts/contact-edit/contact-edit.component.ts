@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 import { Contact } from '../contact.model';
+import { DragDropService } from '../../drag-drop.service';
 
 
 @Component({
@@ -20,11 +21,13 @@ export class ContactEditComponent {
   editMode: boolean = false;
   groupContacts: Contact[] = [];
   id: string;
+  isGroupContact: boolean = false;
 
   constructor(
     private contactService: ContactsService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dragDropService: DragDropService
   ) {}
 
   ngOnInit(): void {
@@ -85,11 +88,45 @@ export class ContactEditComponent {
     return this.groupContacts.some(c => c.id === newContact.id);
   }
 
-  onDropSuccess(event: CdkDragDrop<any>) {
+  onDropSuccess(event: CdkDragDrop<Contact>) {
     const droppedContact = event.item.data;
-
-    if (!this.groupContacts.includes(droppedContact)) {
+    console.log('Dropped contact:', droppedContact);
+    if (this.isInvalidContact(droppedContact)) {
       this.groupContacts.push(droppedContact);
+    }
+
+  }
+
+  onEditContactGroup(contact: Contact) {
+    this.contact = { ...contact};
+    this.isGroupContact = true;
+  }
+
+  onRemoveItem(index: number) {
+    if (index < 0 || index >= this.groupContacts.length) {
+      console.error('Invalid index for removing contact from group:', index);
+      return;
+    }
+    this.groupContacts.splice(index, 1);
+  }
+
+  addToGroup(event: CdkDragDrop<Contact[]>) {
+    const selectedContact: Contact = event.item.data;
+
+    if (this.isInvalidContact(selectedContact)) {
+      return;
+    }
+
+    this.groupContacts.push(selectedContact);
+  }
+
+  onDropContact() {
+    const contact = this.dragDropService.getDraggedContact();
+    if (contact && !this.isInvalidContact(contact)) {
+      this.groupContacts.push(contact);
+      this.dragDropService.clear();
+    } else {
+      console.warn('Invalid contact dropped or no contact available.');
     }
   }
 

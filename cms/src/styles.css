@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+.cdk-drag-preview {
+  z-index: 1000 !important;
+  pointer-events: none;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}

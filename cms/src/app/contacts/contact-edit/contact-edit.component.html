@@ -24,15 +24,15 @@
             type="text"
             id="email"
             name="email"
-            required
             [(ngModel)]="contact.email"
             #email="ngModel"
-            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            [required]="!isGroupContact"
+            [pattern]="!isGroupContact ? '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$' : null"
             class="form-control required"
             size="120"
             max="255">
             <div class="alert alert-danger"
-              *ngIf="(email.invalid) && f.submitted">
+              *ngIf="!isGroupContact && email.invalid && f.submitted">
               Enter a Valid Email Address.
             </div>
         </div>
@@ -47,8 +47,9 @@
             name="phone"
             [(ngModel)]="contact.phone"
             #phone="ngModel"
-            pattern="^(\+?\d{1,3}[- ]?)?\d{10}$"
-            class="form-control invalid"
+            pattern="^(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}$"
+            class="form-control"
+            [class.is-invalid]="phone.invalid && (phone.dirty || phone.touched || f.submitted)"
             size="150"
             max="255">
             <div class="alert alert-danger"
@@ -78,14 +79,15 @@
           <label for="groupList">Group Contacts:</label>
 
           <div
-            class="row"
+            class="group-drop-zone"
             id="groupList"
             cdkDropList
             [cdkDropListData]="groupContacts"
-            (cdkDropListDropped)="onDropSuccess($event)"
-            style="min-height: 3rem; border: 2px dashed #ccc; padding: 1rem;"
+            (cdkDropListDropped)="onDropContact()"
+            cdkDropListGroup
+            style="min-height: 5rem; border: 2px dashed #007bff; background: #f0f8ff; padding: 1rem; margin-top: 1rem;"
           >
-            <div *ngFor="let contact of groupContacts; let i = index" cdkDrag>
+            <div *ngFor="let contact of groupContacts; let i = index" (click)="onEditContactGroup(contact)" cdkDrag>
               <div class="row align-items-center">
                 <cms-contact-item class="col-sm-10" [contact]="contact"></cms-contact-item>
                 <button class="btn btn-danger col-sm-2 deleteButton" (click)="onRemoveItem(i)">X</button>

@@ -123,7 +123,7 @@ export const MOCKCONTACTS: Contact[] = [
   // teams
   // index 13
   {
-    id: '4', name: 'Network/OS team', email: ' ', phone: ' ', imageUrl: ' ', group: [
+    id: '4', name: 'Network/OS team', email: 'networkOSteam@byui.edu', phone: ' ', imageUrl: 'https://static.vecteezy.com/system/resources/previews/032/465/898/non_2x/people-network-icon-social-network-connection-and-global-business-communication-concept-icon-isolated-on-white-background-vector.jpg', group: [
     {
       id: '2',
       name: 'Bradley Armstrong',
@@ -153,7 +153,7 @@ export const MOCKCONTACTS: Contact[] = [
 
   // index 14
   {
-    id: '6', name: 'Software Development team', email: ' ', phone: ' ', imageUrl: ' ', group: [
+    id: '6', name: 'Software Development team', email: 'softwaredev@byui.edu', phone: ' ', imageUrl: 'https://cdn-icons-png.flaticon.com/512/8759/8759087.png', group: [
     {
       id: '1',
       name: 'Rex Barzee',
@@ -191,7 +191,7 @@ export const MOCKCONTACTS: Contact[] = [
 
   // index 15
   {
-    id: '10', name: 'Web Development team', email: ' ', phone: ' ', imageUrl: ' ', group: [
+    id: '10', name: 'Web Development team', email: 'webdev@byui.edu', phone: ' ', imageUrl: 'https://cdn-icons-png.flaticon.com/512/11096/11096817.png', group: [
     {
       id: '15',
       name: 'Blaine Robertson',
@@ -221,7 +221,7 @@ export const MOCKCONTACTS: Contact[] = [
 
   // index 16
   {
-    id: '14', name: 'Database team', email: ' ', phone: ' ', imageUrl: ' ', group: [
+    id: '14', name: 'Database team', email: 'dbteam@byui.edu', phone: ' ', imageUrl: 'https://cdn-icons-png.freepik.com/512/8686/8686102.png', group: [
     {
       id: '7',
       name: 'R. Kent Jackson',
@@ -251,7 +251,7 @@ export const MOCKCONTACTS: Contact[] = [
 
   // index 17
   {
-    id: '18', name: 'Computer Security team', email: ' ', phone: ' ', imageUrl: ' ', group: [
+    id: '18', name: 'Computer Security team', email: 'compsecteam@byui.edu', phone: ' ', imageUrl: 'https://cdn-icons-png.flaticon.com/512/13727/13727721.png', group: [
     {
       id: '5',
       name: 'Kory Godfrey',
