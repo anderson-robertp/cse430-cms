@@ -27,10 +27,10 @@ export class MessageEditComponent {
     }
     
     const newMessage = new Message(
-      '99',
-      subject,
-      msgText,
-      this.currentSender,
+      '99', //ID
+      subject, // subject
+      msgText, // messageText
+      this.currentSender, // sender
     );
 
     this.messageService.addMessage(newMessage);

@@ -32,9 +32,9 @@ export class MessageItemComponent implements OnInit {
       this.messageSender = this.message.sender;
     }
 
-    console.log('Message sender:', this.message.sender);
-    console.log('Contact:', contact);
-    //this.messageSender = contact?.name ?? 'Unknown Sender';
+    //console.log('Message sender:', this.message.sender);
+    //console.log('Contact:', contact);
+    this.messageSender = contact?.name ?? 'Unknown Sender';
     
   }
 }

@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Document } from './documents.model';
 import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
+import { R } from '@angular/cdk/keycodes';
 
 @Injectable({
   providedIn: 'root'
@@ -36,8 +37,7 @@ export class DocumentsService {
         this.documents = documents || [];
         console.log('Fetched documents:', this.documents);
         this.maxDocumentId = this.getMaxId();
-        this.documents.sort((a, b) => a.name.localeCompare(b.name));
-        this.documentListChangedEvent.next(this.documents.slice());
+        this.sortAndSend();
       },
       (error: any) => {
         console.error('Error fetching documents:', error);
@@ -66,12 +66,33 @@ export class DocumentsService {
 
   documentSelectedEvent = new EventEmitter<Document>();
 
-  //documentChangedEvent = new EventEmitter<Document[]>();
+  addDocument(document: Document) {
+    if (!document) {
+      console.warn('No document provided to addDocument');
+      return;
+    }
 
-  addDocument(newDoc: Document) {
-    if (!newDoc) return;
-    this.documents.push(newDoc);
-    this.storeDocuments();
+    // Reset id so backend assigns a new one
+    document.id = '';
+
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    this.http.post<{ message: string; document: Document }>(
+      'http://localhost:3000/documents',
+      document,
+      { headers: headers }
+    ).subscribe({
+      next: (responseData) => {
+        console.log('Document added successfully:', responseData.document);
+
+        // Add new document to local array
+        this.documents.push(responseData.document);
+        this.sortAndSend();
+      },
+      error: (error) => {
+        console.error('Error adding document:', error);
+      }
+    });
   }
 
   updateDocument(originalDocument: Document, newDocument: Document) {
@@ -79,12 +100,23 @@ export class DocumentsService {
       console.error('Invalid original or new document');
       return;
     }
-    const pos = this.documents.indexOf(originalDocument);
+    const pos = this.documents.findIndex(d => d.id === originalDocument.id);
     if (pos < 0) {
       return;
     }
-    this.documents[pos] = newDocument;
-    this.storeDocuments();
+    // Set id to original document's id
+    newDocument.id = originalDocument.id;
+    //newDocument._id = originalDocument._id;
+
+    // Update the document on the server
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    this.http.put(`http://localhost:3000/documents/${originalDocument.id}`, 
+      newDocument, { headers: headers })
+      .subscribe(
+        (response: Response) => {
+         this.documents[pos] = newDocument;
+         this.sortAndSend();
+        },)
   }
 
   deleteDocument(document: Document) {
@@ -95,7 +127,21 @@ export class DocumentsService {
     const pos = this.documents.indexOf(document);
     if (pos < 0 ) return;
     
-    this.documents.splice(pos, 1);
-    this.storeDocuments();
+    this.http.delete(`http://localhost:3000/documents/${document.id}`)
+      .subscribe(
+        (response: Response) => {
+          console.log('Document deleted successfully:', response);
+          this.documents.splice(pos, 1);
+          this.sortAndSend();
+        },
+        (error: any) => {
+          console.error('Error deleting document:', error);
+        }
+      );
+  }
+
+  sortAndSend() {
+    this.documents.sort((a, b) => a.name.localeCompare(b.name));
+    this.documentListChangedEvent.next(this.documents.slice());
   }
 }

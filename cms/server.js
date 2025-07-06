@@ -16,7 +16,7 @@ const contactsRoutes = require('./server/routes/contacts');
 const documentRoutes = require('./server/routes/documents');
 
 // establish a connection to the mongo database
-mongoose.connect('mongodb://localhost:27017/my-db-name')
+mongoose.connect('mongodb://localhost:27017/cms')
   .then(() => {
     console.log('MongoDB connected');
     // Start your app here

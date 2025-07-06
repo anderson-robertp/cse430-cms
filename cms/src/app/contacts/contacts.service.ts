@@ -2,7 +2,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { Contact } from './contact.model';
 import { MOCKCONTACTS } from './MOCKCONTACTS';
 import { Subject, BehaviorSubject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -34,15 +34,13 @@ export class ContactsService {
   }
 
   getContacts() {
-    this.http.get<Contact[]>('https://cse430cms-default-rtdb.firebaseio.com/contacts.json')
+    this.http.get<Contact[]>('http://localhost:3000/contacts')
       .subscribe(
         (contacts) => {
           this.contacts = contacts || [];
-          console.log('Fetched contacts:', this.contacts);
+          //console.log('Fetched contacts:', this.contacts);
           this.maxContactId = this.getMaxId();
-          this.contacts.sort((a, b) => a.name.localeCompare(b.name));
-          //this.contactListChangedEvent.next(this.contacts.slice());
-          this.contacts$.next(this.contacts.slice());
+          this.sortAndSend();
         },
         (error: any) => {
           console.error('Error fetching contacts:', error);
@@ -67,10 +65,29 @@ export class ContactsService {
 
   addContact(newContact: Contact) {
     if (!newContact) {
+      console.error('No contact provided to addContact');
       return;
     }
-    this.contacts.push(newContact);
-    this.storeContacts();
+
+    //Reset the ID if it is not set
+    newContact.id = '';
+
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    this.http.post<{message: string; contact: Contact}>(
+      'http://localhost:3000/contacts',
+      newContact,
+      { headers: headers }
+    ).subscribe({
+      next: (response) => {
+        console.log('Contact added:', response);
+        this.contacts.push(response.contact);
+        this.sortAndSend();
+      },
+      error: (error) => {
+        console.error('Error adding contact:', error);
+      }
+    });
   }
 
   updateContact(originalContact: Contact, newContact: Contact) {
@@ -81,21 +98,35 @@ export class ContactsService {
     if (pos < 0) {
       return;
     }
-    //newContact.id = originalContact.id; // Keep the same ID
+    newContact.id = originalContact.id; // Keep the same ID
+    //newContact._id = originalContact._id; // Keep the same _id if using MongoDB
+    
+    // Update the contact on the server
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    this.http.put(`http://localhost:3000/contacts/${originalContact.id}`, 
+      newContact, { headers: headers })
+      .subscribe({
+        next: (response) => {
+          console.log('Contact updated:', response);
+          this.contacts[pos] = newContact; // Update the local array
+          this.sortAndSend(); // Sort and send the updated list
+        },
+        error: (error) => {
+          console.error('Error updating contact:', error);
+        }
+      });
     this.contacts[pos] = newContact;
     this.storeContacts();
   }
 
-  getContact(id: string) {
-    //console.log('Looking For Contact ID:', id);
-    for (let contact of this.contacts) {
-      if (contact.id === id) {
-        //console.log('Contact found:', contact);
-        return contact;
-      }
-    }
-    return null;
+  getContact(id: string): Contact | null {
+    //console.log('Getting contact with ID:', id);
+    //console.log('Current contacts:', this.contacts);
+    const foundContact = this.contacts.find(contact => contact.id === id) || null;
+    //console.log('Found contact:', foundContact);
+    return foundContact;
   }
+
 
   deleteContact(contact: Contact) {
     if (!contact) {
@@ -106,11 +137,27 @@ export class ContactsService {
     if (pos < 0) {
       return;
     }
-    this.contacts.splice(pos, 1);
-    this.storeContacts();
+    this.http.delete(`http://localhost:3000/contacts/${contact.id}`)
+      .subscribe({
+        next: (response) => {
+          console.log('Contact deleted:', response);
+          this.contacts.splice(pos, 1);
+          this.sortAndSend();
+        },
+        error: (error) => {
+          console.error('Error deleting contact:', error);
+        }
+      }
+    );
   }
 
   setGroupContacts(contacts: Contact[]) {
     this.groupContacts$.next(contacts.slice());
   }
+
+  sortAndSend() {
+    this.contacts.sort((a, b) => a.name.localeCompare(b.name));
+    this.contacts$.next(this.contacts.slice());
+  }
+
 }
