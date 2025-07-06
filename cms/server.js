@@ -5,14 +5,25 @@ var http = require('http');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require('mongoose');
 
 // import the routing file to handle the default (index) route
 var index = require('./server/routes/app');
+
+// ... ADD CODE TO IMPORT YOUR ROUTING FILES HERE ... 
 const messageRoutes = require('./server/routes/messages');
 const contactsRoutes = require('./server/routes/contacts');
 const documentRoutes = require('./server/routes/documents');
 
-// ... ADD CODE TO IMPORT YOUR ROUTING FILES HERE ... 
+// establish a connection to the mongo database
+mongoose.connect('mongodb://localhost:27017/my-db-name')
+  .then(() => {
+    console.log('MongoDB connected');
+    // Start your app here
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+  });
 
 var app = express(); // create an instance of express
 

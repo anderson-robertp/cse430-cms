@@ -30,7 +30,7 @@ export class DocumentsService {
   }
 
   getDocuments() {
-    this.http.get<Document[]>('https://cse430cms-default-rtdb.firebaseio.com/documents.json')
+    this.http.get<Document[]>('http://localhost:3000/documents')
     .subscribe(
       (documents) => {
         this.documents = documents || [];
