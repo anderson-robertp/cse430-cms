@@ -15,15 +15,14 @@ export class MessageListComponent {
   
 
   onAddMessage(message: Message) {
-    this.messages.push(message);
+    this.messageServe.addMessage(message);
   }
 
   constructor(private messageServe: MessagesService) { }
   
   ngOnInit() {
     this.messageServe.getMessages();
-    this.messageServe.messageChangedEvent.subscribe(
-      (messages: Message[]) => {
+    this.messageServe.messageChangedEvent.subscribe((messages) => {
         this.messages = messages;
       }
     );

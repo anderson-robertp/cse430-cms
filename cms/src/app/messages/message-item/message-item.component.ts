@@ -21,7 +21,7 @@ export class MessageItemComponent implements OnInit {
 
   ngOnInit() {
     if (!this.message) {
-      console.log('No message provided');
+      console.log('No message provided', this.message);
       return;
     }
     const contact: Contact = this.contactServe.getContact(this.message.sender);

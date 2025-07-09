@@ -4,12 +4,13 @@ import { Message } from './messages.model';
 import { MOCKMESSAGES } from './MOCKMESSAGES';
 import { HttpClient } from '@angular/common/http';
 import { ContactsService } from '../contacts/contacts.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessagesService {
-  messageChangedEvent = new EventEmitter<Message[]>();
+  messageChangedEvent = new BehaviorSubject<Message[]>([]);
   
   private messages: Message[] = [];
   
@@ -21,6 +22,7 @@ export class MessagesService {
   getMaxId(): number {
     let maxId = 0;
     for (let m of this.messages) {
+      if (!m || !m.id) continue; // skip undefined or invalid messages
       let currentId = parseInt(m.id);
       if (currentId > maxId) {
         maxId = currentId;
@@ -30,13 +32,14 @@ export class MessagesService {
   }
 
   getMessages() {
+    this.contactsService.getContacts(); // Ensure contacts are loaded before fetching messages
     this.contactsService.contacts$.subscribe(
       (contacts) => { if (contacts.length > 0) {
-        console.log('Contacts are available, fetching messages...', contacts);
+        //console.log('Contacts are available, fetching messages...', contacts);
         this.http.get<Message[]>('http://localhost:3000/messages')
           .subscribe(
             (messages) => {
-              this.messages = messages || [];
+              this.messages = messages ?? [];
               //console.log('Fetched messages:', this.messages);
               //this.messages.sort((a, b) => a.subject.localeCompare(b.subject));
               this.getMaxId();
@@ -64,7 +67,7 @@ export class MessagesService {
     this.http.put('https://cse430cms-default-rtdb.firebaseio.com/messages.json', messagesJson)
       .subscribe(
         () => {
-          this.messageChangedEvent.emit(this.messages.slice());
+          this.messageChangedEvent.next(this.messages.slice());
         },
         (error: any) => {
           console.error('Error storing messages:', error);
@@ -73,24 +76,31 @@ export class MessagesService {
   }
 
   addMessage(message: Message) {
-  if (!message) return;
+    //console.log('Adding message:', message);
+    if (!message) return;
 
-  const headers = { 'Content-Type': 'application/json' };
+      const headers = { 'Content-Type': 'application/json' };
 
-  this.http.post<{ message: Message }>('http://localhost:3000/messages', message, { headers })
-    .subscribe({
-      next: (responseData) => {
-        this.messages.push(responseData.message);
-        this.sortAndSend();
-      },
-      error: (error) => {
-        console.error('Error adding message:', error);
-      }
-    });
-}
+      this.http.post<Message>('http://localhost:3000/messages', message, { headers })
+        .subscribe({
+          next: (responseData: Message) => {
+            //console.log('Response from server:', responseData);
+            this.messages.push(responseData);
+            //console.log('Message added successfully:', responseData);
+            this.sortAndSend();
+          },
+          error: (error) => {
+            console.error('Error adding message:', error);
+          }
+        }
+      );
+    }
 
   sortAndSend() {
-    this.messages.sort((a, b) => a.id.localeCompare(b.id));
-    this.messageChangedEvent.emit(this.messages.slice());
+    this.messages.sort((a, b) => {
+      return parseInt(a.id, 10) - parseInt(b.id, 10);
+    });
+    console.log('Messages sorted:', this.messages);
+    this.messageChangedEvent.next(this.messages.slice());
   }
 }
