@@ -77,7 +77,10 @@ export class MessagesService {
 
   addMessage(message: Message) {
     //console.log('Adding message:', message);
-    if (!message) return;
+    if (!message) {
+      console.warn('No message provided to addMessage');
+      return;
+    }
 
       const headers = { 'Content-Type': 'application/json' };
 

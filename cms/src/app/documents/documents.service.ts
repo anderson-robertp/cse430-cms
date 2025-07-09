@@ -77,16 +77,16 @@ export class DocumentsService {
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    this.http.post<{ message: string; document: Document }>(
+    this.http.post<Document>(
       'http://localhost:3000/documents',
       document,
       { headers: headers }
     ).subscribe({
-      next: (responseData) => {
-        console.log('Document added successfully:', responseData.document);
+      next: (responseData: Document) => {
+        console.log('Document added successfully:', responseData);
 
         // Add new document to local array
-        this.documents.push(responseData.document);
+        this.documents.push(responseData);
         this.sortAndSend();
       },
       error: (error) => {

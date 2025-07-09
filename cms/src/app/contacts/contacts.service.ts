@@ -74,14 +74,14 @@ export class ContactsService {
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    this.http.post<{message: string; contact: Contact}>(
+    this.http.post<Contact>(
       'http://localhost:3000/contacts',
       newContact,
       { headers: headers }
     ).subscribe({
-      next: (response) => {
+      next: (response: Contact) => {
         console.log('Contact added:', response);
-        this.contacts.push(response.contact);
+        this.contacts.push(response);
         this.sortAndSend();
       },
       error: (error) => {
